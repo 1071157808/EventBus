@@ -71,6 +71,7 @@ namespace Sample.EventBus.RabbitMQ
                 var eventBody = eventArgument.Body;
                 var json = Encoding.UTF8.GetString(eventBody);
                 var @event = (IEvent)JsonConvert.DeserializeObject(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+                //处理事件
                 await this.eventHandlerExecutionContext.HandleEventAsync(@event);
                 if (!autoAck)
                 {
