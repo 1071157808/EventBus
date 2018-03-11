@@ -25,12 +25,12 @@ namespace Sample.EventBus.Simple
     /// <summary>
     /// 当有消息被派发到消息总线时，消息总线将不做任何处理与路由，而是直接将消息推送到订阅方
     /// </summary>
-    public class PassThroughEventBus : IEventBus
+    public class PassThroughEventBus : BaseEventBus
     {
         private readonly EventQueue eventQueue = new EventQueue();
         //private readonly IEnumerable<IEventHandler> eventHandlers;
         private readonly ILogger logger;
-        private readonly IEventHandlerExecutionContext context;
+        //private readonly IEventHandlerExecutionContext context;
 
         /**
 		 * 因为PassThroughEventBus和CustomerCreatedEventHandler都被注册到了IoC容器中。
@@ -38,9 +38,10 @@ namespace Sample.EventBus.Simple
 		 * 并将resolve的实例注射到构造函数中。所有这些事情都是IoC容器完成的。
 		 */
         public PassThroughEventBus(IEventHandlerExecutionContext context, ILogger<PassThroughEventBus> logger)
+            :base(context)
         {
             //this.eventHandlers = eventHandlers;
-            this.context = context;
+            //this.context = context;
             this.logger = logger;
             logger.LogInformation($"PassThroughEventBus 构造函数调用完成。Hash Code：{this.GetHashCode()}.");
 
@@ -48,21 +49,18 @@ namespace Sample.EventBus.Simple
         }
 
         //将传入的事件消息转发到EventQueue上
-        public Task PublishAsync<TEvent>(TEvent @event,
+        public override Task PublishAsync<TEvent>(TEvent @event,
             CancellationToken cancellationToken = default)
-            where TEvent : IEvent
             => Task.Factory.StartNew(() => eventQueue.Push(@event));
 
-        public void Subscribe<TEvent, TEventHandler>()
-            where TEvent : IEvent
-            where TEventHandler : IEventHandler<TEvent>
+        public override void Subscribe<TEvent, TEventHandler>()
         {
             //eventQueue.EventPushed += EventQueue_EventPushed;
 
-            if (!context.HandlerRegistered<TEvent, TEventHandler>())
+            if (!eventHandlerExecutionContext.HandlerRegistered<TEvent, TEventHandler>())
             {
                 //将事件处理 注册为瞬时的
-                context.RegisterHandler<TEvent, TEventHandler>();
+                eventHandlerExecutionContext.RegisterHandler<TEvent, TEventHandler>();
             }
         }
 
@@ -75,12 +73,12 @@ namespace Sample.EventBus.Simple
             //ehlist.ToList()
             //   .ForEach(async eh => await eh.HandleAsync(e.Event));
 
-            await context.HandleEventAsync(e.Event);
+            await eventHandlerExecutionContext.HandleEventAsync(e.Event);
         }
 
         #region Dispose
-        private bool disposedValue = false; // 检测多余的呼叫
-        public void Dispose(bool disposing)
+        private bool disposedValue;
+        protected override void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
@@ -93,7 +91,6 @@ namespace Sample.EventBus.Simple
                 disposedValue = true;
             }
         }
-        public void Dispose() => Dispose(true);
         #endregion
     }
 }

@@ -20,6 +20,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
+    <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="2.0.0-dev-00023" />
   </ItemGroup>
 
@@ -29,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sample.Common\Sample.Common.csproj" />
+    <ProjectReference Include="..\Sample.EventBus.RabbitMQ\Sample.EventBus.RabbitMQ.csproj" />
     <ProjectReference Include="..\Sample.EventBus.Simple\Sample.EventBus.Simple.csproj" />
     <ProjectReference Include="..\Sample.EventStores.Dapper\Sample.EventStores.Dapper.csproj" />
     <ProjectReference Include="..\Sample.Integration.NetCore\Sample.Integration.NetCore.csproj" />

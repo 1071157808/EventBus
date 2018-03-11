@@ -39,6 +39,7 @@ namespace WebApiCustomEventSample2.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] dynamic model)
         {
+            //Content-Type:application/json
             //PostMan raw {Name:'yxf007'} //区分大小写
 
             if (model == null)

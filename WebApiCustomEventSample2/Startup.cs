@@ -8,7 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 using Sample.Common.Events;
+using Sample.EventBus.RabbitMQ;
 using Sample.EventBus.Simple;
 using Sample.EventStores.Dapper;
 using Sample.Integration.NetCore;
@@ -19,6 +21,9 @@ namespace WebApiCustomEventSample2
 {
     public class Startup
     {
+        private const string RMQ_EXCHANGE = "Yxf.Exchange";
+        private const string RMQ_QUEUE = "Yxf.Queue";
+
         public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
@@ -42,7 +47,13 @@ namespace WebApiCustomEventSample2
             //services.AddTransient<IEventHandler, CustomerCreatedEventHandler>();
 
             services.AddSingleton<IEventHandlerExecutionContext>(new EventHandlerExecutionContext(services, sc => sc.BuildServiceProvider()));
-            services.AddSingleton<IEventBus, PassThroughEventBus>();
+            //services.AddSingleton<IEventBus, PassThroughEventBus>();
+            var connectionFactory = new ConnectionFactory { HostName = "localhost" };
+            services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(connectionFactory,
+                sp.GetRequiredService<ILogger<RabbitMQEventBus>>(),
+                sp.GetRequiredService<IEventHandlerExecutionContext>(),
+                RMQ_EXCHANGE,
+                queueName: RMQ_QUEUE));
 
             logger.LogInformation("服务配置完成，已注册到IoC容器！");
         }
