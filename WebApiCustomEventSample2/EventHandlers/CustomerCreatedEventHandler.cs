@@ -11,7 +11,7 @@ namespace WebApiCustomEventSample2.EventHandlers
 {
     public class CustomerCreatedEventHandler : IEventHandler<CustomerCreatedEvent>
     {
-        private readonly IEventStore eventStore;
+        private readonly IEventStore eventStore; //也是瞬时的注入
         private readonly ILogger logger;
 
         public CustomerCreatedEventHandler(IEventStore eventStore, ILogger<CustomerCreatedEventHandler> logger)

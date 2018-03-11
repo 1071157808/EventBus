@@ -39,11 +39,9 @@ namespace WebApiCustomEventSample2
             services.AddTransient<IEventStore>(serviceProvider =>
                 new DapperEventStore(Configuration["sql:connectionString"],
                 serviceProvider.GetRequiredService<ILogger<DapperEventStore>>()));
-
-            var eventHandlerExecutionContext = new EventHandlerExecutionContext(services,
-                sc => sc.BuildServiceProvider());
-            services.AddSingleton<IEventHandlerExecutionContext>(eventHandlerExecutionContext);
             //services.AddTransient<IEventHandler, CustomerCreatedEventHandler>();
+
+            services.AddSingleton<IEventHandlerExecutionContext>(new EventHandlerExecutionContext(services, sc => sc.BuildServiceProvider()));
             services.AddSingleton<IEventBus, PassThroughEventBus>();
 
             logger.LogInformation("服务配置完成，已注册到IoC容器！");
@@ -52,9 +50,10 @@ namespace WebApiCustomEventSample2
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            //subscribe
+            // subscribe 将事件处理 注册为瞬时的
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
             eventBus.Subscribe<CustomerCreatedEvent, CustomerCreatedEventHandler>();
+            //eventBus.Subscribe<TestEvent, TestEventHandler>();  //更多注册
 
             if (env.IsDevelopment())
             {

@@ -11,8 +11,11 @@ using System.Threading.Tasks;
 namespace Sample.Integration.NetCore
 {
     /**
-     * Microsoft.Extensions.DependencyInjection框架2.0版本之前，
-     * IServiceCollection.BuildServiceProvider方法的返回类型是IServiceProvider，
+     * 解决：由于构造函数注入，使得对象之间产生了依赖关系
+     * 事件处理器执行上下文(三个方法)：注册事件 是否注册 事件处理
+     * 
+     * Microsoft.Extensions.DependencyInjection 框架2.0版本之前，
+     * IServiceCollection.BuildServiceProvider 方法的返回类型是IServiceProvider，
      * 但从2.0开始，它的返回类型已经从IServiceProvider接口，变成了ServiceProvider类。
      * 这里引出了框架设计的另一个原则，就是依赖较低版本的.NET Core，以便获得更好的兼容性。
      */
@@ -36,7 +39,7 @@ namespace Sample.Integration.NetCore
             if (this.registrations.TryGetValue(eventType, out List<Type> handlerTypes) &&
                 handlerTypes?.Count > 0)
             {
-                var serviceProvider = this.serviceProviderFactory(this.registry);
+                var serviceProvider = serviceProviderFactory(registry);
                 using (var childScope = serviceProvider.CreateScope())
                 {
                     foreach (var handlerType in handlerTypes)
@@ -69,11 +72,11 @@ namespace Sample.Integration.NetCore
         public void RegisterHandler<TEvent, THandler>()
             where TEvent : IEvent
             where THandler : IEventHandler<TEvent>
-            => this.RegisterHandler(typeof(TEvent), typeof(THandler));
+            => RegisterHandler(typeof(TEvent), typeof(THandler));
 
         public void RegisterHandler(Type eventType, Type handlerType)
         {
-            Utils.ConcurrentDictionarySafeRegister(eventType, handlerType, this.registrations);
+            Utils.ConcurrentDictionarySafeRegister(eventType, handlerType, registrations);
 
             //将事件处理 注册为瞬时!!
             registry.AddTransient(handlerType);

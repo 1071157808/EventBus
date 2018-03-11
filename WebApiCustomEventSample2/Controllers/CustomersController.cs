@@ -48,7 +48,7 @@ namespace WebApiCustomEventSample2.Controllers
             if (string.IsNullOrEmpty(name))
                 return BadRequest();
 
-            this.logger.LogInformation($"假设客户信息创建成功。");
+            logger.LogInformation($"假设客户信息创建成功。");
 
             await eventBus.PublishAsync(new CustomerCreatedEvent(name));
 
