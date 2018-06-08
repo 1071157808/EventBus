@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.EventStores.Dapper",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Integration.NetCore", "Sample.Integration.NetCore\Sample.Integration.NetCore.csproj", "{D5BDEDF7-6A18-412D-BCD2-A388E05904B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.EventBus.RabbitMQ", "Sample.EventBus.RabbitMQ\Sample.EventBus.RabbitMQ.csproj", "{4B85D8A1-2E62-4BFD-A05A-222AD4A50499}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.EventBus.RabbitMQ", "Sample.EventBus.RabbitMQ\Sample.EventBus.RabbitMQ.csproj", "{4B85D8A1-2E62-4BFD-A05A-222AD4A50499}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
